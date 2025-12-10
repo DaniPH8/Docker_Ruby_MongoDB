@@ -1,0 +1,23 @@
+services:
+  app:
+    image: ruby:3.4  # Las imágenes estándar (no-alpine) ya incluyen Git
+    container_name: ruby_app
+    working_dir: /app
+    volumes:
+      - .:/app  # Sincroniza tu carpeta actual con el contenedor
+    depends_on:
+      - mongodb
+    ports:
+      - "3000:3000" # Puerto común para Rails/Sinatra
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/mi_base_datos
+    # Mantiene el contenedor activo para que puedas entrar
+    command: tail -f /dev/null 
+
+  mongodb:
+    image: mongo:7.0
+    container_name: mongodb_db
+    volumes:
+      - ./datos_db:/data/db
+    ports:
+      - "27017:27017"
