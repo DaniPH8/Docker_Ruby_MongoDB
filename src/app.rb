@@ -58,16 +58,22 @@ post '/subir-git' do
     datos.each { |d| d[:_id] = d[:_id].to_s }
     File.write('backup_cursos.json', JSON.pretty_generate(datos))
 
-    # 2. Ejecutar Git
-    cmd = "git add . && git commit -m 'Backup desde web' && git push origin main"
+    # 2. Ejecutar Git capturando el mensaje de error (2>&1)
+    # Usamos Backticks (``) en vez de system() para leer el texto de respuesta
+    output = `git add . && git commit -m 'Backup web' && git push origin main 2>&1`
     
-    if system(cmd)
-      "<h1>✅ Guardado</h1><p>Backup creado y subido a GitHub.</p><a href='/'>Volver</a>"
+    # $?.success? comprueba si el comando anterior salió bien
+    if $?.success?
+      "<h1>✅ Guardado</h1><pre>#{output}</pre><a href='/'>Volver</a>"
     else
-      "<h1>❌ Error</h1><p>Revisa la terminal de Docker.</p><a href='/'>Volver</a>"
+      # Aquí veremos el error real en rojo
+      "<h1>❌ Error Crítico</h1>
+       <p>Git ha devuelto este mensaje:</p>
+       <pre style='background: #ffe6e6; padding: 10px; border: 1px solid red;'>#{output}</pre>
+       <a href='/'>Volver</a>"
     end
   rescue StandardError => e
-    "Error: #{e.message}"
+    "Error de Ruby: #{e.message}"
   end
 end
 

@@ -12,9 +12,9 @@
     "precio": "Gratis"
   },
   {
-    "_id": "693b18af3f5af875e74a1f37",
-    "titulo": "Prueba",
-    "duracion": "435",
-    "precio": "645"
+    "_id": "693b1c1ee0f4cb2de041c25c",
+    "titulo": "Prueba de Git",
+    "duracion": "2h",
+    "precio": "10€"
   }
 ]

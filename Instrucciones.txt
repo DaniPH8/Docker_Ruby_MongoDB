@@ -31,3 +31,6 @@ necesitamos que Ruby funcione como un servidor web y escuche en el puerto que ab
 2 - "docker compose exec app bundle install" con este comando se instalan las librerías para evitar un dockerfile
 3 - Se edita el app.rb para conectarse a la base de datos.
 4 - Se ejecuta y ya sale en el navegador con la conexion a la base de datos, en este caso a una de cusos de informática.
+5- Para hacerlo un repositorio de git, en la carpeta local, git init para crear la base de datos interna, git add . para añadir todo el contenido de la carpeta,
+git commit -m "Primera versión" para empaquetar los cambios y git push -u para subir los archivos.
+
