@@ -1,13 +1,12 @@
 require 'sinatra'
 require 'mongo'
 require 'json'
-require 'fileutils' # Necesario para manejar archivos
+require 'fileutils'
 
 set :bind, '0.0.0.0'
 set :port, 3000
 
-# CONFIGURACIÓN IMPORTANTE: Carpeta de archivos estáticos (imágenes)
-# Esto le dice a Sinatra que busque archivos en la carpeta 'public' de tu proyecto
+# Configuración de carpeta pública para imágenes
 set :public_folder, File.join(File.dirname(__FILE__), '../public')
 
 # Conexión MongoDB
@@ -18,7 +17,6 @@ cursos_col = client[:cursos]
 get '/' do
   cards_html = cursos_col.find.map do |curso|
     id = curso[:_id].to_s
-    # Si hay imagen guardada usamos esa, si no, una genérica gris
     img_path = curso[:imagen] ? "/uploads/#{curso[:imagen]}" : "https://via.placeholder.com/300x200?text=Sin+Imagen"
     
     "
@@ -47,7 +45,7 @@ get '/' do
     <div class='p-5 mb-4 bg-dark text-white rounded-3' style='background: linear-gradient(to right, #2c3e50, #4ca1af);'>
       <div class='container-fluid py-3'>
         <h1 class='display-5 fw-bold'>Mis Cursos Online</h1>
-        <p class='fs-4'>Catálogo gestionado con Ruby, Mongo e Imágenes Locales.</p>
+        <p class='fs-4'>Catálogo gestionado con Ruby, Mongo y Git.</p>
         <a href='#form-crear' class='btn btn-light btn-lg'>+ Subir Curso</a>
       </div>
     </div>
@@ -78,8 +76,7 @@ post '/subir-git' do
     datos.each { |d| d[:_id] = d[:_id].to_s }
     File.write('backup_cursos.json', JSON.pretty_generate(datos))
 
-    # Importante: git add . incluirá las imágenes de public/uploads
-    cmd = "git add . && git commit -m 'Backup con imagenes' && git push origin main 2>&1"
+    cmd = "git add . && git commit -m 'Backup completo' && git push origin main 2>&1"
     output = `#{cmd}`
     
     if $?.success?
@@ -92,53 +89,29 @@ post '/subir-git' do
   end
 end
 
-# --- LOGICA DE GUARDADO DE IMAGEN ---
+# --- LOGICA DE IMAGEN ---
 def guardar_imagen(params_imagen)
-  return nil unless params_imagen # Si no suben foto, devolvemos nil
-  
+  return nil unless params_imagen
   filename = params_imagen[:filename]
-  file = params_imagen[:tempfile]
-  
-  # Ruta física donde se guarda (dentro del contenedor)
   path = File.join(File.dirname(__FILE__), '../public/uploads', filename)
-  
-  # Escribir el archivo
-  File.open(path, 'wb') do |f|
-    f.write(file.read)
-  end
-  
-  filename # Devolvemos solo el nombre para guardarlo en la BD
+  File.open(path, 'wb') { |f| f.write(params_imagen[:tempfile].read) }
+  filename
 end
 
 # --- CRUD ---
 post '/nuevo' do
-  # Procesamos la imagen
   nombre_imagen = guardar_imagen(params[:imagen])
-
-  cursos_col.insert_one({
-    titulo: params[:titulo],
-    duracion: params[:duracion],
-    precio: params[:precio],
-    imagen: nombre_imagen # Guardamos el nombre del archivo en Mongo
-  })
+  cursos_col.insert_one({ titulo: params[:titulo], duracion: params[:duracion], precio: params[:precio], imagen: nombre_imagen })
   redirect '/'
 end
 
 post '/actualizar/:id' do
   id = BSON::ObjectId.from_string(params[:id])
-  
-  update_data = {
-    titulo: params[:titulo],
-    duracion: params[:duracion],
-    precio: params[:precio]
-  }
-
-  # Solo actualizamos la imagen si el usuario subió una nueva
+  update_data = { titulo: params[:titulo], duracion: params[:duracion], precio: params[:precio] }
   if params[:imagen]
     nombre_imagen = guardar_imagen(params[:imagen])
     update_data[:imagen] = nombre_imagen
   end
-
   cursos_col.update_one({ _id: id }, { '$set' => update_data })
   redirect '/'
 end
@@ -170,13 +143,13 @@ def layout(contenido)
   <html lang='es'>
   <head>
     <meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
-    <title>Cursos Ruby</title>
+    <title>Cursos Online</title>
     <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
   </head>
   <body class='bg-light'>
     <nav class='navbar navbar-expand-lg navbar-dark bg-dark shadow-sm'>
       <div class='container'>
-        <a class='navbar-brand' href='/'>📷 RubyCursos</a>
+        <a class='navbar-brand' href='/'>📷 Cursos online</a>
         <form action='/subir-git' method='POST' class='d-flex m-0'>
           <button type='submit' class='btn btn-outline-light btn-sm'>☁️ Push Git</button>
         </form>
@@ -186,34 +159,15 @@ def layout(contenido)
   </body></html>"
 end
 
-# Helper actualizado con soporte para enctype='multipart/form-data'
 def form_curso(accion, btn_txt, tit='', dur='', pre='', es_edicion=false)
   nota_imagen = es_edicion ? "<small class='text-muted'>Deja vacío para mantener la imagen actual</small>" : ""
-  
-  "
-  <form action='#{accion}' method='POST' enctype='multipart/form-data'>
-    <div class='mb-3'>
-      <label class='form-label'>Título</label>
-      <input type='text' name='titulo' value='#{tit}' class='form-control' required>
-    </div>
+  "<form action='#{accion}' method='POST' enctype='multipart/form-data'>
+    <div class='mb-3'><label class='form-label'>Título</label><input type='text' name='titulo' value='#{tit}' class='form-control' required></div>
     <div class='row'>
-      <div class='col-md-6 mb-3'>
-        <label class='form-label'>Duración</label>
-        <input type='text' name='duracion' value='#{dur}' class='form-control' required>
-      </div>
-      <div class='col-md-6 mb-3'>
-        <label class='form-label'>Precio</label>
-        <input type='text' name='precio' value='#{pre}' class='form-control' required>
-      </div>
+      <div class='col-md-6 mb-3'><label class='form-label'>Duración</label><input type='text' name='duracion' value='#{dur}' class='form-control' required></div>
+      <div class='col-md-6 mb-3'><label class='form-label'>Precio</label><input type='text' name='precio' value='#{pre}' class='form-control' required></div>
     </div>
-    
-    <div class='mb-3'>
-      <label class='form-label'>Imagen del Curso</label>
-      <input type='file' name='imagen' class='form-control' accept='image/*'>
-      #{nota_imagen}
-    </div>
-
+    <div class='mb-3'><label class='form-label'>Imagen</label><input type='file' name='imagen' class='form-control' accept='image/*'>#{nota_imagen}</div>
     <button type='submit' class='btn btn-success w-100'>#{btn_txt}</button>
-  </form>
-  "
+  </form>"
 end
