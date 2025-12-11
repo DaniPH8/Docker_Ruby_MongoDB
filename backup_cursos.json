@@ -1,0 +1,20 @@
+[
+  {
+    "_id": "6931e169449aeb9d8b94434d",
+    "titulo": "Java nivel avanzado",
+    "duracion": "25h",
+    "precio": "50€"
+  },
+  {
+    "_id": "6931e178449aeb9d8b94434e",
+    "titulo": "Docker",
+    "duracion": "2h",
+    "precio": "Gratis"
+  },
+  {
+    "_id": "693b18af3f5af875e74a1f37",
+    "titulo": "Prueba",
+    "duracion": "435",
+    "precio": "645"
+  }
+]
