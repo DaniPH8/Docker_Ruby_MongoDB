@@ -3,24 +3,28 @@
     "_id": "6931e169449aeb9d8b94434d",
     "titulo": "Java nivel avanzado",
     "duracion": "25h",
-    "precio": "50€"
+    "precio": "50€",
+    "imagen": "java.jpg"
   },
   {
     "_id": "6931e178449aeb9d8b94434e",
     "titulo": "Docker",
     "duracion": "2h",
-    "precio": "Gratis"
+    "precio": "Gratis",
+    "imagen": "docker_logo.jpg"
   },
   {
     "_id": "693b1ca4c58daca3d608f254",
     "titulo": "Android Studio Básico",
     "duracion": "20h",
-    "precio": "70€"
+    "precio": "70€",
+    "imagen": "androidStudio.jpg"
   },
   {
     "_id": "693b1d608888f635dab45d9b",
     "titulo": "Prueba de Git",
     "duracion": "34h",
-    "precio": "60€"
+    "precio": "60€",
+    "imagen": "gitImages.jpg"
   }
 ]
