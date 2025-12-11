@@ -9,7 +9,7 @@ set :port, 3000
 client = Mongo::Client.new('mongodb://mongodb:27017/plataforma_cursos')
 cursos_col = client[:cursos]
 
-# --- R (READ): Listar cursos y mostrar interfaz ---
+# --- PÁGINA PRINCIPAL ---
 get '/' do
   lista_html = cursos_col.find.map do |curso|
     id = curso[:_id].to_s
@@ -50,7 +50,7 @@ get '/' do
   "
 end
 
-# --- LÓGICA DE GIT ---
+# --- LÓGICA DE GIT (Simplificada) ---
 post '/subir-git' do
   begin
     # 1. Exportar JSON
@@ -58,22 +58,29 @@ post '/subir-git' do
     datos.each { |d| d[:_id] = d[:_id].to_s }
     File.write('backup_cursos.json', JSON.pretty_generate(datos))
 
-    # 2. Ejecutar Git capturando el mensaje de error (2>&1)
-    # Usamos Backticks (``) en vez de system() para leer el texto de respuesta
-    output = `git add . && git commit -m 'Backup web' && git push origin main 2>&1`
+    # 2. Ejecutar Git
+    cmd = "git add . && git commit -m 'Backup desde web' && git push origin main 2>&1"
+    output = `#{cmd}` # Ejecutamos el comando
     
-    # $?.success? comprueba si el comando anterior salió bien
     if $?.success?
-      "<h1>✅ Guardado</h1><pre>#{output}</pre><a href='/'>Volver</a>"
+      # MENSAJE DE ÉXITO LIMPIO
+      "<div style='font-family: sans-serif; text-align: center; margin-top: 50px;'>
+         <h1 style='color: #28a745; font-size: 40px;'>✅</h1>
+         <h2 style='color: #333;'>Push realizado correctamente</h2>
+         <p style='color: #666;'>Tus cambios y la base de datos están a salvo en GitHub.</p>
+         <br>
+         <a href='/' style='text-decoration: none; background: #0d6efd; color: white; padding: 10px 20px; border-radius: 5px;'>Volver al inicio</a>
+       </div>"
     else
-      # Aquí veremos el error real en rojo
-      "<h1>❌ Error Crítico</h1>
-       <p>Git ha devuelto este mensaje:</p>
-       <pre style='background: #ffe6e6; padding: 10px; border: 1px solid red;'>#{output}</pre>
-       <a href='/'>Volver</a>"
+      # Si falla, sí mostramos el error para saber qué pasa
+      "<div style='font-family: sans-serif; max-width: 800px; margin: 20px auto;'>
+         <h1 style='color: #dc3545;'>❌ Hubo un problema</h1>
+         <pre style='background: #f8d7da; padding: 15px; border-radius: 5px; color: #721c24;'>#{output}</pre>
+         <a href='/'>Volver</a>
+       </div>"
     end
   rescue StandardError => e
-    "Error de Ruby: #{e.message}"
+    "Error interno: #{e.message}"
   end
 end
 

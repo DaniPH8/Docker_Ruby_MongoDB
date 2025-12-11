@@ -16,5 +16,11 @@
     "titulo": "Android Studio Básico",
     "duracion": "20h",
     "precio": "70€"
+  },
+  {
+    "_id": "693b1d608888f635dab45d9b",
+    "titulo": "Prueba",
+    "duracion": "34h",
+    "precio": "60€"
   }
 ]
