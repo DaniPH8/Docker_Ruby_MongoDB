@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "695f9c930ad65f2c2807c8bf",
+    "titulo": "Android Studio avanzado",
+    "duracion": "80H",
+    "precio": "150€",
+    "imagen": "1767873683_1765483145_androidStudio.jpg"
+  },
+  {
+    "_id": "695fde584defd604e8373185",
+    "titulo": "Introducción a Docker",
+    "duracion": "10H",
+    "precio": "19,99",
+    "imagen": "1767890520_1767868787_imagenDocker.jpeg"
+  }
+]

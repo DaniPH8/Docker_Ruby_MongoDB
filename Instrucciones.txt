@@ -1,0 +1,36 @@
+Estructura del proyecto:
+
+mi-proyecto-cursos/
+├── .git/                # Carpeta oculta del repositorio (creada al hacer git init)
+├── .gitignore           # Reglas para que Git ignore la base de datos
+├── datos_db/            # Carpeta donde MongoDB guarda los datos (creada por Docker)
+├── docker-compose.yml   # Configuración de Docker
+├── Gemfile              # Lista de librerías (Gemas)
+├── Gemfile.lock         # Archivo de bloqueo de versiones (creado por bundle install)
+└── src/                 # Tu código fuente
+    └── app.rb           # La aplicación web con Sinatra
+
+
+- HOLA MUNDO (consola)
+
+1 - Para hacer un hola mundo por terminal habría que crear el docker-compose.yml
+poniéndole las imagenes de ruby y mongodb(aunque no la usemos para el hola mundo, ya lo tengo)
+2 - Levanto el servicio
+3 - Entro al contenedor (docker compose exec app bash)
+
+- HOLA MUNDO (navegador)
+
+1- Sí, para verlo en un navegador (como Chrome),
+necesitamos que Ruby funcione como un servidor web y escuche en el puerto que abrimos (3000). Para ello modificamos el app.rb
+2 - Lo ejecutamos con: docker compose exec app ruby servidor.rb
+3 - Con poner http://localhost:3000/ en el navegador ya sale.
+
+ - IMPLEMENTACIÓN DE RUBY + MONGODB + GIT en una web
+
+1 - Se crea un archivo Gemfile en la raíz del proyecto para definir las dependencias
+2 - "docker compose exec app bundle install" con este comando se instalan las librerías para evitar un dockerfile
+3 - Se edita el app.rb para conectarse a la base de datos.
+4 - Se ejecuta y ya sale en el navegador con la conexion a la base de datos, en este caso a una de cusos de informática.
+5- Para hacerlo un repositorio de git, en la carpeta local, git init para crear la base de datos interna, git add . para añadir todo el contenido de la carpeta,
+git commit -m "Primera versión" para empaquetar los cambios y git push -u para subir los archivos.
+
